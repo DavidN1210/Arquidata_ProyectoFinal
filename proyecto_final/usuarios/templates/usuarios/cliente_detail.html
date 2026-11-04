@@ -1,0 +1,138 @@
+{% extends 'usuarios/base_arquitecto.html' %}
+{% load static %}
+
+{% block title %}Detalle de Cliente - ArquiData{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="{% url 'lista_clientes' %}" class="text-white opacity-75 text-uppercase small font-weight-bold" style="text-decoration: none; letter-spacing: 0.5px;">
+                <i class="fas fa-arrow-left mr-2"></i> Volver al listado de clientes
+            </a>
+        </div>
+    </div>
+
+    <div class="row tm-content-row mb-4">
+        <div class="col-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto p-4">
+                <div class="d-flex align-items-center flex-wrap">
+                    <div class="mr-4 my-2 d-flex align-items-center justify-content-center font-weight-bold" 
+                         style="width: 75px; height: 75px; background-color: #4e657a; color: #fff; border-radius: 50%; font-size: 1.8rem;">
+                        {{ cliente.user.first_name|default:cliente.user.username|slice:":1"|upper }}
+                    </div>
+                    
+                    <div class="my-2">
+                        <h2 class="tm-block-title mb-1" style="font-size: 1.6rem;">{{ cliente.user.get_full_name|default:cliente.user.username }}</h2>
+                        <p class="text-white opacity-50 mb-2 small">@{{ cliente.user.username }} | NIF/ID: <span class="font-weight-bold" style="font-family: monospace;">{{ cliente.pk }}</span></p>
+
+                        {% if cliente.tiene_suscripcion_activa %}
+                            <div class="d-inline-flex align-items-center">
+                                <div class="tm-status-circle moving mr-2"></div>
+                                <span class="small text-white font-weight-bold text-uppercase" style="letter-spacing: 0.5px; color: #2ecc71 !important;">Membresía Activa</span>
+                            </div>
+                        {% else %}
+                            <div class="d-inline-flex align-items-center">
+                                <div class="tm-status-circle cancelled mr-2"></div>
+                                <span class="small text-white font-weight-bold text-uppercase" style="letter-spacing: 0.5px; color: #e74c3c !important;">Sin Suscripción Activa</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="my-4" style="border-top: 1px solid #4e657a;"></div>
+
+                <div class="row text-white">
+                    <div class="col-12 col-sm-6 col-md-3 mb-3">
+                        <label class="text-uppercase font-weight-bold d-block mb-1 opacity-50" style="font-size: 0.75rem; letter-spacing: 0.5px;">Correo Electrónico</label>
+                        <span class="d-block text-truncate font-weight-bold" style="color: #a1c4e6;">{{ cliente.user.email|default:cliente.correo_electronico }}</span>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3 mb-3">
+                        <label class="text-uppercase font-weight-bold d-block mb-1 opacity-50" style="font-size: 0.75rem; letter-spacing: 0.5px;">Teléfono de Contacto</label>
+                        <span class="d-block font-weight-bold">{{ cliente.telefono|default:"No registrado" }}</span>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3 mb-3">
+                        <label class="text-uppercase font-weight-bold d-block mb-1 opacity-50" style="font-size: 0.75rem; letter-spacing: 0.5px;">Organización / Estudio</label>
+                        <span class="d-block font-weight-bold" style="color: #f5a623;">{{ cliente.nom_empresa|default:"Particular / Autónomo" }}</span>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3 mb-3">
+                        <label class="text-uppercase font-weight-bold d-block mb-1 opacity-50" style="font-size: 0.75rem; letter-spacing: 0.5px;">Registro IBAN</label>
+                        <span class="d-block font-weight-bold" style="font-family: monospace;">
+                            {% if cliente.cuenta_bancaria %}
+                                ES************{{ cliente.cuenta_bancaria|slice:"-4:" }}
+                            {% else %}
+                                No registrada
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row tm-content-row mt-4 mb-2">
+        <div class="col-12">
+            <h3 class="tm-block-title mb-0"><i class="fas fa-folder-open mr-2 text-muted"></i> Expedientes y Planos Solicitados</h3>
+        </div>
+    </div>
+
+    <div class="row tm-content-row">
+        <div class="col-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+                
+                <table class="table tm-table-small tm-product-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="ps-3">ID PLANO</th>
+                            <th scope="col">PROYECTO / IDENTIFICADOR</th>
+                            <th scope="col" class="text-center">ESTADO OPERATIVO</th>
+                            <th scope="col" class="text-center">GESTIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plano in planos %}
+                        <tr>
+                            <td class="ps-3 font-weight-bold" style="font-family: monospace; color: #a1c4e6;">
+                                #{{ plano.id_plano }}
+                            </td>
+
+                            <td class="tm-product-name">
+                                <b class="text-white">{{ plano.titulo|default:"Plano sin nombre" }}</b>
+                                <span class="d-block small text-muted mt-1">Formato: {{ plano.formato }} | {{ plano.tamano }} m²</span>
+                            </td>
+
+                            <td class="text-center">
+                                {% if plano.estado == 'LISTO' %}
+                                    <div class="tm-status-circle moving"></div>
+                                    <span class="small text-white">Listo</span>
+                                {% else %}
+                                    <div class="tm-status-circle cancelled"></div>
+                                    <span class="small text-white">
+                                        {% if plano.get_estado_display %}{{ plano.get_estado_display }}{% else %}{{ plano.estado }}{% endif %}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-center">
+                                <a href="{% url 'plano_arquitecto_info' plano.id_plano %}" class="btn btn-sm text-uppercase px-3 font-weight-bold" style="background-color: #4e657a; color: #fff; border: none; font-size: 0.8rem;">
+                                    <i class="fas fa-cog mr-1"></i> Gestionar
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="fas fa-layer-group fa-3x d-block mb-3 opacity-50" style="color: #4e657a;"></i>
+                                Este cliente aún no ha solicitado ningún plano en la plataforma.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

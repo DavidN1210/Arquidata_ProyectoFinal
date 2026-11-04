@@ -1,0 +1,106 @@
+{% extends 'usuarios/base_cliente.html' %}
+{% load static %}
+
+{% block title %}Mis Planos Solicitados - ArquiData{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row tm-content-row">
+        <div class="col-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto d-flex justify-content-between align-items-center flex-wrap">
+                <div class="mb-2">
+                    <h2 class="tm-block-title d-inline-block mb-0">Mis Planos Solicitados</h2>
+                    <p class="text-white opacity-75 mt-1 mb-0">Historial de encargos técnicos y estado de las revisiones de tu cuenta.</p>
+                </div>
+                <a href="{% url 'solicitar_plano' %}" class="btn btn-primary text-uppercase px-4 py-2" style="background-color: #f5a623; border: none; font-weight: 600; letter-spacing: 1px;">
+                    <i class="fas fa-plus mr-2"></i> Solicitar Nuevo Plano
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+        <div class="row mb-3">
+            <div class="col-12">
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert" style="background-color: #435c70; color: #fff; border: none;">
+                        {{ message }}
+                        <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row tm-content-row">
+        <div class="col-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+                <h2 class="tm-block-title">Listado de Proyectos en la Plataforma</h2>
+                
+                <table class="table tm-table-small tm-product-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">NOMBRE / DESCRIPCIÓN</th>
+                            <th scope="col">ARQUITECTO ASIGNADO</th>
+                            <th scope="col" class="text-center">ESTADO DEL PLANO</th>
+                            <th scope="col" class="text-center">ACCIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plano in planos %}
+                        <tr>
+                            <td class="tm-product-name fw-semibold">#{{ plano.id_plano }}</td>
+                            
+                            <td>
+                                <b class="text-white">{{ plano.titulo }}</b>
+                                <span class="d-block small text-muted mt-1">
+                                    Tamaño: {{ plano.tamano }} m² | Formato pedido: {{ plano.formato }}
+                                </span>
+                            </td>
+                            
+                            <td>
+                                <span class="text-white">
+                                    <i class="far fa-user mr-2 text-muted"></i>
+                                    {% if plano.arquitecto.user.get_full_name %}
+                                        {{ plano.arquitecto.user.get_full_name }}
+                                    {% else %}
+                                        {{ plano.arquitecto.user.username }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                            
+                            <td class="text-center">
+                                {% if plano.estado == 'LISTO' %}
+                                    <div class="tm-status-circle moving"></div>
+                                    <span class="small text-white">Listo para Descarga</span>
+                                {% else %}
+                                    <div class="tm-status-circle cancelled"></div>
+                                    <span class="small text-white">En Proceso</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td class="text-center">
+                                <a href="{% url 'plano_cliente_info' plano.id_plano %}" class="btn btn-sm text-uppercase px-3" style="background-color: #4e657a; color: #fff; border: none; font-weight: 500;">
+                                    Ver Detalle
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-file-invoice fa-3x d-block mb-3 opacity-50" style="color: #4e657a;"></i>
+                                Aún no has solicitado ningún plano técnico en tu cuenta corporativa.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

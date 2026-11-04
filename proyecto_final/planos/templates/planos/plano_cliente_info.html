@@ -1,0 +1,147 @@
+{% extends 'usuarios/base_cliente.html' %}
+{% load static %}
+
+{% block title %}Detalle del Plano #{{ plano.id_plano }} - ArquiData{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="{% url 'planos_clientes' %}" class="text-white opacity-75 text-uppercase small font-weight-bold" style="text-decoration: none; letter-spacing: 0.5px;">
+                <i class="fas fa-arrow-left mr-2"></i> Volver a mis planos
+            </a>
+        </div>
+    </div>
+
+    <div class="row tm-content-row mb-2">
+        <div class="col-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+                <h2 class="tm-block-title d-inline-block mb-0">{{ plano.titulo }}</h2>
+                <span class="badge px-3 py-1 ml-2" style="background-color: #4e657a; color: #fff; font-family: monospace; font-size: 0.9rem;">
+                    #{{ plano.id_plano }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row tm-content-row align-items-stretch">
+        
+        <div class="col-12 col-md-6 tm-block-col mb-4">
+            <div class="tm-bg-primary-dark tm-block h-100 d-flex flex-column justify-content-between p-4">
+                <div>
+                    <h3 class="tm-block-title border-bottom pb-2" style="border-color: #4e657a !important;">
+                        <i class="fas fa-file-alt mr-2 text-muted"></i> Mi Solicitud Base
+                    </h3>
+                    
+                    <ul class="list-unstyled mt-3 mb-4 text-white small">
+                        <li class="py-2 border-bottom d-flex justify-content-between" style="border-color: #4e657a !important;">
+                            <span class="opacity-75">Superficie:</span>
+                            <b class="text-white">{{ plano.tamano }} m²</b>
+                        </li>
+                        <li class="py-2 border-bottom d-flex justify-content-between" style="border-color: #4e657a !important;">
+                            <span class="opacity-75">Formato Requerido:</span>
+                            <span class="badge px-2 py-1 font-weight-bold text-uppercase" style="background-color: #4e657a; color: #fff;">{{ plano.formato }}</span>
+                        </li>
+                        <li class="py-2 d-flex justify-content-between">
+                            <span class="opacity-75">Arquitecto Encargado:</span>
+                            <b style="color: #f5a623;">{{ plano.arquitecto.user.get_full_name|default:plano.arquitecto.user.username }}</b>
+                        </li>
+                    </ul>
+
+                    {% if plano.archivo %}
+                    <div class="p-3 mb-4 d-flex align-items-center justify-content-between" style="background-color: #4e657a;">
+                        <div class="overflow-hidden mr-2">
+                            <span class="d-block font-weight-bold text-white text-truncate" style="font-size: 0.9rem;"><i class="fas fa-file-signature mr-2 text-success"></i>Archivo Base Adjuntado</span>
+                            <small class="text-white opacity-50 d-block mt-1">Enviado el {{ plano.fecha_subida|date:"d/m/Y H:i" }}</small>
+                        </div>
+                        <a href="{{ plano.archivo.url }}" class="btn btn-sm text-uppercase px-3 font-weight-bold" style="background-color: #54657a; color: #fff; border: 1px solid #6f8299;" download>
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                    {% else %}
+                    <p class="text-muted small mb-4"><i class="fas fa-info-circle mr-2"></i>No has subido ningún archivo adjunto todavía para este plano.</p>
+                    {% endif %}
+                </div>
+
+                <div class="mt-auto tm-edit-product-form">
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <label class="text-white font-weight-bold small text-uppercase">Actualizar o Subir Archivo (.pdf, .dwg)</label>
+                            <input class="form-control-file text-white py-1" type="file" id="id_archivo_base" name="archivo_base" required>
+
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if 'Error:' in message.message %}
+                                        <p class="text-warning small mt-2 mb-0"><i class="fas fa-exclamation-triangle mr-1"></i> {{ message }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <button type="submit" name="subir_base" class="btn btn-primary btn-block text-uppercase font-weight-bold py-2" style="background-color: #f5a623; border: none; font-size: 0.9rem;">
+                            <i class="fas fa-paper-plane mr-2"></i> Enviar al Arquitecto
+                        </button>
+                    </form>
+
+                    {% if plano.estado != 'FINALIZADO' %}
+                    <div class="mt-3 pt-3 border-top" style="border-color: #4e657a !important;">
+                        <form method="POST" action="{% url 'eliminar_plano' plano.id_plano %}" onsubmit="return confirm('¿Estás completamente seguro de que deseas eliminar esta solicitud? Esta acción no se puede deshacer.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-block text-uppercase font-weight-bold py-2" style="background-color: #a93226; color: #fff; border: none; font-size: 0.85rem;">
+                                <i class="fas fa-trash-alt mr-2"></i> Cancelar y Eliminar Solicitud
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 tm-block-col mb-4">
+            {% if plano.archivo_procesado %}
+                {% if permitir_descarga %}
+                <div class="tm-bg-primary-dark tm-block h-100 d-flex flex-column justify-content-center align-items-center text-center p-5" style="border: 2px solid #2ecc71; background-color: rgba(46, 204, 113, 0.05);">
+                    <div class="mb-4 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background-color: #2ecc71; border-radius: 50%;">
+                        <i class="fas fa-cloud-download-alt fa-2x text-white"></i>
+                    </div>
+                    <h3 class="tm-block-title mb-2" style="color: #2ecc71;">¡Tu Plano está Listo!</h3>
+                    <p class="text-white opacity-75 px-2 mb-4 small">El arquitecto ha procesado los cálculos técnicos. Puedes descargar tu archivo final estructurado gracias a tu membresía corporativa activa.</p>
+                    <a href="{{ plano.archivo_procesado.url }}" class="btn text-uppercase font-weight-bold px-4 py-3 shadow" style="background-color: #2ecc71; color: #fff; border: none; letter-spacing: 0.5px;" download>
+                        <i class="fas fa-file-download mr-2"></i> Descargar Plano Final
+                    </a>
+                </div>
+                {% else %}
+                <div class="tm-bg-primary-dark tm-block h-100 d-flex flex-column justify-content-center align-items-center text-center p-5" style="border: 2px solid #e74c3c; background-color: rgba(231, 76, 60, 0.05);">
+                    <div class="mb-4 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background-color: #e74c3c; border-radius: 50%;">
+                        <i class="fas fa-lock fa-2x text-white"></i>
+                    </div>
+                    <h3 class="tm-block-title mb-2" style="color: #e74c3c;">Plano Procesado (Bloqueado)</h3>
+                    <p class="text-white opacity-75 px-3 mb-4 small">Tu arquitecto ha subido el volcado estructural de la pieza técnica, pero tu cuenta no dispone de una suscripción comercial activa o has alcanzado el límite. Actualiza tu plan para desbloquear la descarga definitiva.</p>
+                    <a href="{% url 'suscripciones' %}" class="btn text-uppercase font-weight-bold px-4 py-2" style="background-color: #f5a623; color: #1a252f; border: none;">
+                        <i class="fas fa-credit-card mr-2"></i> Gestionar Suscripción
+                    </a>
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="tm-bg-primary-dark tm-block h-100 d-flex flex-column justify-content-center align-items-center text-center p-5" style="border: 2px dashed #4e657a;">
+                    <div class="mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background-color: #4e657a; border-radius: 50%;">
+                        <i class="fas fa-hourglass-half fa-lg text-white tm-spin"></i>
+                    </div>
+                    <h3 class="tm-block-title mb-1">En Lista de Espera Técnica</h3>
+                    <p class="text-white opacity-50 small px-3">Tu arquitecto asignado está calculando las dimensiones y cargas mecánicas estructurales. Te notificaremos de manera visual en esta caja en cuanto realice el volcado final del documento técnico.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .tm-spin {
+        animation: spin-animation 2.5s infinite linear;
+    }
+    @keyframes spin-animation {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}

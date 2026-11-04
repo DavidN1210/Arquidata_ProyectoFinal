@@ -1,0 +1,98 @@
+{% extends 'usuarios/base_arquitecto.html' %}
+{% load static %}
+
+{% block title %}Listado de Clientes - ArquiData{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row tm-content-row">
+        <div class="col-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto d-flex justify-content-between align-items-center flex-wrap">
+                <div class="mb-2">
+                    <h2 class="tm-block-title d-inline-block mb-0">Control de Clientes</h2>
+                    <p class="text-white opacity-75 mt-1 mb-0">Gestiona las cuentas de los usuarios, revisa sus suscripciones y supervisa sus proyectos.</p>
+                </div>
+                <a href="{% url 'registro-cliente' %}" class="btn btn-primary text-uppercase px-4 py-2" style="background-color: #f5a623; border: none; font-weight: 600; letter-spacing: 1px;">
+                    <i class="fas fa-user-plus mr-2"></i> Nuevo Cliente
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row tm-content-row">
+        <div class="col-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+                <h2 class="tm-block-title">Clientes Registrados en la Plataforma</h2>
+                
+                <table class="table tm-table-small tm-product-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="ps-3">CLIENTE</th>
+                            <th scope="col">CONTACTO</th>
+                            <th scope="col" class="text-center">ESTADO SUSCRIPCIÓN</th>
+                            <th scope="col" class="text-center">PLANOS SOLICITADOS</th>
+                            <th scope="col" class="text-center">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes %}
+                        <tr>
+                            <td class="tm-product-name ps-3">
+                                <b class="text-white">{{ cliente.user.get_full_name|default:cliente.user.username }}</b>
+                                <span class="d-block small text-muted mt-1">@{{ cliente.user.username }}</span>
+                            </td>
+
+                            <td>
+                                <span class="text-white d-block small"><i class="far fa-envelope mr-2 text-muted"></i>{{ cliente.user.email }}</span>
+                                <span class="text-muted d-block small mt-1"><i class="fas fa-phone mr-2 text-muted"></i>{{ cliente.telefono|default:"No registrado" }}</span>
+                            </td>
+
+                            <td class="text-center">
+                                {% if cliente.tiene_suscripcion_activa %}
+                                    <div class="tm-status-circle moving"></div>
+                                    <span class="small text-white">Activa</span>
+                                {% else %}
+                                    <div class="tm-status-circle cancelled"></div>
+                                    <span class="small text-white">Inactiva</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-center">
+                                <span class="badge px-3 py-1" style="background-color: #4e657a; color: #fff; font-size: 0.95rem; font-weight: 600;">
+                                    {{ cliente.total_planos }}
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+                                <a href="{% url 'detalle_cliente' cliente.user.id %}" class="btn btn-sm text-uppercase px-2 mr-2" style="background-color: #4e657a; color: #fff; border: none; font-weight: 500;" title="Ver historial">
+                                    <i class="far fa-eye mr-1"></i> Ver
+                                </a>
+                                
+                                <a href="{% url 'editar_cliente' cliente.user.id %}" class="btn btn-sm text-uppercase px-2 mr-2" style="background-color: #4e657a; color: #fff; border: none; font-weight: 500;" title="Editar datos">
+                                    <i class="fas fa-pencil-alt mr-1"></i> Editar
+                                </a>
+                                
+                                <form action="{% url 'eliminar_cliente' cliente.user.id %}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar por completo a este cliente y todos sus datos? Esta acción no se puede deshacer.');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm text-uppercase px-2" style="background-color: #a93226; color: #fff; border: none; font-weight: 500;" title="Eliminar cuenta">
+                                        <i class="far fa-trash-alt mr-1"></i> Borrar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-users fa-3x d-block mb-3 opacity-50" style="color: #4e657a;"></i>
+                                No hay clientes registrados en la plataforma todavía.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

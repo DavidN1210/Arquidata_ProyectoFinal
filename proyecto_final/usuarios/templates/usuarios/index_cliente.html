@@ -1,0 +1,150 @@
+{% extends 'usuarios/base_cliente.html' %}
+{% load static %}
+
+{% block title %}Panel de Control - ArquiData{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <div class="row tm-content-row mb-4">
+        <div class="col-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto position-relative overflow-hidden p-5">
+                <div style="position: absolute; top: -10px; right: 10px; opacity: 0.1; color: #fff;">
+                    <i class="fas fa-drafting-compass fa-8x"></i>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-8">
+                        <h1 class="tm-block-title mb-3" style="font-size: 2.2rem;">
+                            Bienvenido de nuevo, {{ request.user.get_full_name|default:request.user.username }}
+                        </h1>
+                        <p class="text-white opacity-75 lead mb-4" style="max-width: 800px; font-size: 1.05rem; line-height: 1.6;">
+                            Gestiona tus proyectos técnicos, descarga las revisiones calculadas estructuralmente y mantén el control directo de tus solicitudes. ArquiData es tu infraestructura de ingeniería digital.
+                        </p>
+                        
+                        <div class="d-flex flex-wrap align-items-center">
+                            <div class="mr-3 mb-2 px-3 py-2" style="background-color: #4e657a; color: #fff; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px;">
+                                <i class="fas fa-file-invoice mr-2" style="color: #f5a623;"></i> 
+                                {{ planos_solicitados_count|default:"0" }} {% if planos_solicitados_count == 1 %}Plano solicitado{% else %}Planos solicitados{% endif %}
+                            </div>
+                            <div class="mb-2 px-3 py-2" style="background-color: #4e657a; color: #fff; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px;">
+                                <i class="fas fa-check-circle mr-2" style="color: #2ecc71;"></i> 
+                                Suscripción: {{ suscripcion.tipo_suscripcion|default:"Sin Plan Activo" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row tm-content-row mt-5 mb-2">
+        <div class="col-12 text-center tm-block-col">
+            <span class="badge px-3 py-2 mb-2 text-uppercase font-weight-bold" style="background-color: #4e657a; color: #f5a623; letter-spacing: 1px;">Actualiza tu Plan</span>
+            <h2 class="tm-block-title text-center mt-1">Nuestros Planes de Suscripción</h2>
+            <div class="mx-auto" style="width: 50px; height: 3px; background-color: #f5a623;"></div>
+        </div>
+    </div>
+    
+    <div class="row tm-content-row align-items-stretch justify-content-center">
+        
+        <div class="col-12 col-md-4 tm-block-col mb-4">
+            <div class="tm-bg-primary-dark tm-block h-100 d-flex flex-column justify-content-between p-5 pricing-card">
+                <div class="text-center w-100">
+                    <div class="icon-box-dash mb-3">
+                        <i class="fas fa-paper-plane fa-2x" style="color: #4e657a;"></i>
+                    </div>
+                    <h3 class="tm-block-title mb-2 text-uppercase text-center">Básico</h3>
+                    <div class="price-tag text-white text-center my-3">
+                        <span class="currency">€</span><span class="amount font-weight-bold">9.99</span><span class="period">/mes</span>
+                    </div>
+                    <ul class="list-unstyled my-4 text-left small" style="color: #a1c4e6;">
+                        <li class="py-2 border-bottom" style="border-color: #4e657a !important;"><i class="fa fa-check mr-2" style="color: #2ecc71;"></i> 1 Proyecto activo</li>
+                        <li class="py-2 border-bottom" style="border-color: #4e657a !important;"><i class="fa fa-check mr-2" style="color: #2ecc71;"></i> Gestión de planos básica</li>
+                        <li class="py-2 opacity-50"><i class="fa fa-times mr-2" style="color: #e74c3c;"></i> Soporte Prioritario</li>
+                    </ul>
+                </div>
+                <a href="{% url 'suscripciones' %}" class="btn btn-block text-uppercase font-weight-bold py-2 mt-auto" style="background-color: #4e657a; color: #fff; border: none; font-size: 0.85rem;">
+                    Seleccionar Básico
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-12 col-md-4 tm-block-col mb-4">
+            <div class="tm-bg-primary-dark tm-block h-100 d-flex flex-column justify-content-between p-5 pricing-card" style="border: 2px solid #f5a623; box-shadow: 0 0 15px rgba(245, 166, 35, 0.15); position: relative;">
+                <div style="position: absolute; top: 0; right: 20px; background: #f5a623; color: #1a252f; padding: 2px 10px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Popular
+                </div>
+                <div class="text-center w-100">
+                    <div class="icon-box-dash mb-3" style="background-color: rgba(245, 166, 35, 0.1);">
+                        <i class="fas fa-rocket fa-2x" style="color: #f5a623;"></i>
+                    </div>
+                    <h3 class="tm-block-title mb-2 text-uppercase text-center" style="color: #f5a623;">Estándar</h3>
+                    <div class="price-tag text-white text-center my-3">
+                        <span class="currency">€</span><span class="amount font-weight-bold" style="color: #f5a623;">19.99</span><span class="period">/mes</span>
+                    </div>
+                    <ul class="list-unstyled my-4 text-left small" style="color: #fff;">
+                        <li class="py-2 border-bottom" style="border-color: #4e657a !important;"><i class="fa fa-check mr-2" style="color: #f5a623;"></i> 10 Proyectos activos</li>
+                        <li class="py-2 border-bottom" style="border-color: #4e657a !important;"><i class="fa fa-check mr-2" style="color: #f5a623;"></i> Almacenamiento ampliado</li>
+                        <li class="py-2 border-bottom" style="border-color: #4e657a !important;"><i class="fa fa-check mr-2" style="color: #f5a623;"></i> Informes personalizados</li>
+                        <li class="py-2"><i class="fa fa-check mr-2" style="color: #f5a623;"></i> Soporte Prioritario</li>
+                    </ul>
+                </div>
+                <a href="{% url 'suscripciones' %}" class="btn btn-block text-uppercase font-weight-bold py-2 mt-auto" style="background-color: #f5a623; color: #1a252f; border: none; font-size: 0.85rem;">
+                    ¡Empezar Ahora!
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-12 col-md-4 tm-block-col mb-4">
+            <div class="tm-bg-primary-dark tm-block h-100 d-flex flex-column justify-content-between p-5 pricing-card">
+                <div class="text-center w-100">
+                    <div class="icon-box-dash mb-3">
+                        <i class="fas fa-crown fa-2x" style="color: #f1c40f;"></i>
+                    </div>
+                    <h3 class="tm-block-title mb-2 text-uppercase text-center">Premium</h3>
+                    <div class="price-tag text-white text-center my-3">
+                        <span class="currency">€</span><span class="amount font-weight-bold">29.99</span><span class="period">/mes</span>
+                    </div>
+                    <ul class="list-unstyled my-4 text-left small" style="color: #a1c4e6;">
+                        <li class="py-2 border-bottom" style="border-color: #4e657a !important;"><i class="fa fa-check mr-2" style="color: #2ecc71;"></i> Proyectos ilimitados</li>
+                        <li class="py-2 border-bottom" style="border-color: #4e657a !important;"><i class="fa fa-check mr-2" style="color: #2ecc71;"></i> Análisis de costes</li>
+                        <li class="py-2"><i class="fa fa-check mr-2" style="color: #2ecc71;"></i> Multiusuario</li>
+                    </ul>
+                </div>
+                <a href="{% url 'suscripciones' %}" class="btn btn-block text-uppercase font-weight-bold py-2 mt-auto" style="background-color: #4e657a; color: #fff; border: none; font-size: 0.85rem;">
+                    Seleccionar Premium
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Caja circular para los iconos de las columnas de precios */
+    .icon-box-dash {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto;
+        background-color: #4e657a;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Estructura de fuentes de precios */
+    .price-tag .amount { font-size: 2.3rem; letter-spacing: -1px; }
+    .price-tag .currency { font-size: 1.2rem; vertical-align: super; margin-right: 3px; }
+    .price-tag .period { font-size: 0.85rem; opacity: 0.6; }
+
+    /* Animación e interacción sutil al pasar el cursor */
+    .pricing-card {
+        transition: transform 0.3s ease;
+    }
+    .pricing-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
