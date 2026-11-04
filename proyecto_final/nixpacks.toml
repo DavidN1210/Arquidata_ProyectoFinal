@@ -1,8 +1,5 @@
-[phases.setup]
-nixPkgs = ["python313", "gcc"]
-
 [phases.install]
-cmds = ["python -m venv .venv", ".venv/bin/pip install --upgrade pip", ".venv/bin/pip install -r requirements.txt"]
+cmds = ["pip install -r requirements.txt"]
 
 [start]
-cmd = ".venv/bin/gunicorn proyecto_final.wsgi:application --bind 0.0.0.0:$PORT"
+cmd = "gunicorn proyecto_final.wsgi:application --bind 0.0.0.0:$PORT"
