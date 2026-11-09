@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-fu#)$&na!k0@&5n1&4ix!xx5hfoy_m4#ti34^(fopa)bm*1_uq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['arquidata-proyecto-final.vercel.app', '.vercel.app', '127.0.0.1', 'localhost']
 
 
 # Application definition
